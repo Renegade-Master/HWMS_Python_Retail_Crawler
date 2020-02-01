@@ -1,15 +1,59 @@
+import enum
+import json
+import re
+
+import Crawler
+
+
 class CrawlerManager:
-    search_request_string = ''
-    item_requested = ''
+    """ Class: Crawler Manager
+    This class handles the Web Crawlers that are created to search for
+    the provided RequestString.
+    """
 
-    def __init__(self, test):
-        self.search_request_string = test
+    _crawlers = []
+    _cleaned_request_strings = []
 
-    def gimmethatstringback(self):
-        return self.search_request_string
+    _search_request_string = ''
+    _item_requested = ''
 
-    def gimmetheactualitem(self):
+    def __init__(self, eventstring):
+        self.raw_request_string = json.loads(eventstring)
+
+    def load_crawlers(self):
         # Extract the first item in the Request Dictionary Object
-        self.item_requested = self.search_request_string['Records'][0]['dynamodb']["NewImage"]["item"]["S"]
+        self._item_requested = (
+            self.raw_request_string
+            ['Records'][0]['dynamodb']["NewImage"]["item"]["S"]
+        )
 
-        return self.item_requested
+        for retailer in Retailer:
+            self._cleaned_request_strings.append(
+                self._format_search_term(self._item_requested, retailer))
+
+        return self._item_requested
+
+    def _format_search_term(self, item_, retailer_):
+        repl = ''
+
+        regex = re.compile(r'\s', re.IGNORECASE)
+
+        # Format it however the Retailer is expecting
+        if (retailer_ == Retailer.UK_SCAN or
+                retailer_ == Retailer.UK_ARIA):
+            repl = '+'
+        else:
+            raise ValueError('CrawlerManager._format_search_term: '
+                             'Unsupported or missing value provided for'
+                             ' Retailer.')
+
+        clean_string = regex.sub(repl, item_)
+
+        print('Cleaned String: ' + clean_string)
+
+        return clean_string
+
+
+class Retailer(enum.Enum):
+    UK_SCAN = 1
+    UK_ARIA = 2

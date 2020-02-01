@@ -1,5 +1,5 @@
-import json
 import os
+import json
 
 import CrawlerManager
 
@@ -17,9 +17,8 @@ def lambda_handler(event, context):
     print('## END EVENT')
 
     print('## TESTING 01')
-    cw = CrawlerManager.CrawlerManager(json.loads(event))
-    print(cw.gimmethatstringback())
-    print(cw.gimmetheactualitem())
+    cw = CrawlerManager.CrawlerManager(event)
+    print(cw.load_crawlers())
     print('## END TESTING 01')
 
     return {
