@@ -33,7 +33,7 @@ def __main__():
     new_event = '{ "Records": [ { "eventID": "67aa50f9a78d16d372b673cfec5e6e19", "eventName": "INSERT", ' \
                 '"eventVersion": "1.1", "eventSource": "aws:dynamodb", "awsRegion": "eu-west-1", "dynamodb": { ' \
                 '"ApproximateCreationDateTime": 1579040208, "Keys": { "id": { "S": "1579111412732" } }, "NewImage": { '\
-                '"createdAt": { "S": "2020-01-14T22:16:48.341Z" }, "item": { "S": "CPU Intel i7 8700K" }, ' \
+                '"createdAt": { "S": "2020-01-14T22:16:48.341Z" }, "item": { "S": "CPU Intel i7 9700K" }, ' \
                 '"__typename": { "S": "SearchQueryRequest" }, "prediction": { "BOOL": false }, "id": { "S": ' \
                 '"1579111412732" }, "updatedAt": { "S": "2020-01-14T22:16:48.341Z" } }, "SequenceNumber": ' \
                 '"30337100000000002705939892", "SizeBytes": 157, "StreamViewType": "NEW_AND_OLD_IMAGES" }, ' \

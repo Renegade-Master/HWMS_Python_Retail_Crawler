@@ -24,7 +24,7 @@ class Crawler(Thread):
         self.test_thread()
 
     def test_thread(self):
-        print('From Thread: ' + self.name)
+        print('\nFrom Thread: ' + self.name)
         print('My Term: ' + self._item_requested)
         print('My xPath: ' + self._xpath)
 
