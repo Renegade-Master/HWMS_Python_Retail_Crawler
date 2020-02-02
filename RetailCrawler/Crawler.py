@@ -29,7 +29,7 @@ class Crawler(Thread):
         print('My xPath: ' + self._xpath)
 
     def search_for_deals(self, search_term):
-        while(True):
+        while True:
             print('Initiating Search for: {}'.format(search_term))
 
             page = requests.get('https://www.scan.co.uk/search?q={}'.format(search_term))

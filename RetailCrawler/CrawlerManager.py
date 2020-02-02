@@ -12,11 +12,8 @@ class CrawlerManager:
     """
 
     _crawlers = []
-    _cleaned_request_strings = []
-    _cleaned_xpaths = []
     _item_response_strings = Queue()
 
-    _search_request_string = ''
     _item_requested = ''
 
     def __init__(self, eventstring):
@@ -29,20 +26,13 @@ class CrawlerManager:
             ['Records'][0]['dynamodb']["NewImage"]["item"]["S"]
         )
 
-        for retailer in hwms.Retailer:
-            self._cleaned_request_strings.append(
-                hwms.format_search_term(self._item_requested, retailer))
-
-        for retailer in hwms.Retailer:
-            self._cleaned_xpaths.append(
-                hwms.define_xpath(retailer))
-
-        for i in range(len(self._cleaned_request_strings)):
+        for retailer in hwms.Retailer.__iter__():
             self._crawlers.append(Crawler(
-                self._cleaned_request_strings[i],
-                self._cleaned_xpaths[i]
+                hwms.format_search_term(self._item_requested, retailer),
+                hwms.define_xpath(retailer)
             ))
 
+        # Start the Crawlers
         for crawler in self._crawlers:
             crawler.start()
             crawler.join()
