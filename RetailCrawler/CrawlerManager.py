@@ -36,3 +36,17 @@ class CrawlerManager:
         for crawler in self._crawlers:
             crawler.start()
             crawler.join()
+
+        # Start the Crawlers
+        for crawler in self._crawlers:
+            self._item_response_strings.put(crawler.result_of_search)
+
+        # Check if Crawlers are still alive
+        for crawler in self._crawlers:
+            print('Thread ' + crawler.name + ' is Alive? ' + str(crawler.is_alive()))
+
+        # Exit the program
+        return
+
+    def get_results(self):
+        return self._item_response_strings

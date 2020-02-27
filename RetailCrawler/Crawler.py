@@ -28,6 +28,10 @@ class Crawler(Thread):
         print('My Term: ' + self._item_requested)
         print('My xPath: ' + self._xpath)
 
+        self.result_of_search.put(self.name + ' returned first result')
+        self.result_of_search.put(self.name + ' returned second result')
+        return
+
     # def search_for_deals(self, search_term):
     #     while True:
     #         print('Initiating Search for: {}'.format(search_term))
