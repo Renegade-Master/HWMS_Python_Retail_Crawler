@@ -1,5 +1,6 @@
 from json import loads
 from queue import Queue
+from threading import Condition
 
 from Crawler import Crawler
 import HwmsTools as hwms
@@ -13,19 +14,20 @@ class CrawlerManager:
 
     _crawlers = []
     _item_response_strings = Queue()
+    _queue_condition = Condition()
 
     _item_requested = ''
 
     def __init__(self, eventstring):
         self.raw_request_string = loads(eventstring)
 
-    def load_crawlers(self):
         # Extract the first item in the Request Dictionary Object
         self._item_requested = (
             self.raw_request_string
             ['Records'][0]['dynamodb']["NewImage"]["item"]["S"]
         )
 
+    def load_crawlers(self):
         for retailer in hwms.Retailer.__iter__():
             self._crawlers.append(Crawler(
                 hwms.format_search_term(self._item_requested, retailer),
@@ -40,6 +42,8 @@ class CrawlerManager:
         # Start the Crawlers
         for crawler in self._crawlers:
             self._item_response_strings.put(crawler.result_of_search)
+
+        self._item_response_strings.task_done()
 
         # Check if Crawlers are still alive
         for crawler in self._crawlers:
