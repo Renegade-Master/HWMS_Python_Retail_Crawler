@@ -128,4 +128,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-hwms_retailPriceCrawler_*.zip
+hwms_retailPriceCrawler*.zip
