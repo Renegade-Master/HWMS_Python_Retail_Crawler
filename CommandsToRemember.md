@@ -15,7 +15,12 @@
 &nbsp;
 ## To Install new PIP Packages
 ~/repoDir >> {Activate VENV} >>  
-    `pip install --upgrade pip`  
+    `pip install myNewPackage`
+
+&nbsp;
+## To update the `requirements.txt` file
+~/repoDir >> {Activate VENV} >>  
+    `pip freeze -r templateReqs.txt > newReqs.txt`
     
 &nbsp;
 ## To Deactivate the Environment when finished
