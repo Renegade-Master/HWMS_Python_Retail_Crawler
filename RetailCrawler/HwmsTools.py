@@ -74,35 +74,83 @@ def define_xpath(retailer_):
     different retailers.
     """
 
-    # ToDo: Move the retailer specific Strings to an external file
-    #  that is read in
-
-    x_path = ''
+    x_paths = ''
 
     # if retailer_ == Retailer.DE_AMAZON:
-    #     x_path = \
+    #     x_paths = \
     #         '/html/body/div[1]/div[1]/div[1]/div[2]/div/span[4]/div[1]/div[1]/div/span/div/div/div[2]/div[2]/div/div[' \
     #         '1]/div/div/div[1]/h2/a/span'
     if retailer_ == Retailer.DE_CASEKING:
-        x_path = [
+        x_paths = [
             '//span[@class="ProductTitle"]/text()',
             '//span[@class="price"]/text()']
     elif retailer_ == Retailer.NO_KOMPLETT:
-        x_path = \
-            '/html/body/div[1]/div/div[3]/div/div/div/div/div/div/div[4]/div[3]/div[1]/div[2]/h3/a/span'
+        x_paths = [
+            '//span[@itemprop="name"]/text()',
+            '//div[@class="productlist-huidigeprijs"]/text()']
     # elif retailer_ == Retailer.UK_AMAZON:
-    #     x_path = \
+    #     x_paths = \
     #         '/html/body/div[1]/div[2]/div[1]/div[2]/div/span[4]/div[1]/div[3]/div/span/div/div/div[2]/div[2]/div/div[' \
     #         '1]/div/div/div[1]/h2/a/span '
     elif retailer_ == Retailer.UK_ARIA:
-        x_path = \
-            '/html/body/div[4]/div[1]/div[2]/div[2]/div/div/table/tbody/tr[2]/td[2]/strong/a'
+        x_paths = [
+            '//tr[@class="listTableTrSS"]/td[@style="max-width: 350px;"]/strong/a/text()',
+            '//span[@class="price bold"]/text()']
     elif retailer_ == Retailer.UK_SCAN:
-        x_path = \
-            '/html/body/div[2]/div[3]/div/div/div/div/div[2]/ul[1]/li[1]/div[1]/span[2]/span[2]/a'
+        x_paths = [
+            '//span[@class="description"]/a/text()',
+            '//div[@class="leftColumn"]/span[@class="price"]/text()']
 
-    # print('XPath: ' + x_path)
-    return x_path
+    # print('XPath: ' + x_paths)
+    return x_paths
+
+
+def clean_price_results(retailer_, price_list_):
+    """ Function: clean_price_results
+    This function takes the raw scraped data and cleans it according to the Retailer from which the data originated.
+    """
+
+    cleaned_price_list = ''
+
+    # if retailer_ == Retailer.DE_AMAZON:
+    #     pass
+    if retailer_ == Retailer.DE_CASEKING:
+        pass
+    elif retailer_ == Retailer.NO_KOMPLETT:
+        pass
+    # elif retailer_ == Retailer.UK_AMAZON:
+    #     pass
+    elif retailer_ == Retailer.UK_ARIA:
+        pass
+    elif retailer_ == Retailer.UK_SCAN:
+        pass
+
+    print('Cleaned Price List: ' + cleaned_price_list)
+    return cleaned_price_list
+
+
+def clean_product_name_results(retailer_, title_list_):
+    """ Function: clean_product_name_results
+    This function takes the raw scraped data and cleans it according to the Retailer from which the data originated.
+    """
+
+    cleaned_product_name_list = ''
+
+    # if retailer_ == Retailer.DE_AMAZON:
+    #     pass
+    if retailer_ == Retailer.DE_CASEKING:
+        pass
+    elif retailer_ == Retailer.NO_KOMPLETT:
+        pass
+    # elif retailer_ == Retailer.UK_AMAZON:
+    #     pass
+    elif retailer_ == Retailer.UK_ARIA:
+        pass
+    elif retailer_ == Retailer.UK_SCAN:
+        pass
+
+    print('Cleaned Product Name List: ' + cleaned_product_name_list)
+    return cleaned_product_name_list
 
 
 class Retailer(Enum):

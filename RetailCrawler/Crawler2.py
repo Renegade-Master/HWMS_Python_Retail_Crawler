@@ -2,7 +2,7 @@ from threading import Thread
 from random import randint
 import requests
 from lxml import html
-from HwmsTools import revert
+from HwmsTools import revert, clean_price_results, clean_product_name_results
 
 
 class Crawler(Thread):
@@ -17,6 +17,7 @@ class Crawler(Thread):
     _xpath_price = ''
     _xpath_name = ''
     _queue_condition = ''
+    _retailer = ''
 
     def __init__(self, item_, xpaths_, retailer_):
         super().__init__()
@@ -24,6 +25,7 @@ class Crawler(Thread):
         self._item_requested = item_
         self._xpath_name = xpaths_[0]
         self._xpath_price = xpaths_[1]
+        self._retailer = retailer_
         self.name = self.name + ' [' + retailer_ + ']'
         # print('Crawler ' + self.name + ' initialised')
 
@@ -75,12 +77,15 @@ class Crawler(Thread):
 
         #   Tidy up the results
         # print('\n')
-        refined_items = [x.rstrip() for x in rough_items]
+        # refined_items = [x.rstrip() for x in rough_items]
         # refined_prices = [x.strip('[Aa') for x in rough_prices]
 
-        refined_prices = [str(x).replace(".", "") for x in rough_prices]
-        refined_prices = [x[:-6] for x in refined_prices]
-        refined_prices = [int(x) for x in refined_prices]
+        refined_items = clean_product_name_results(self._retailer, rough_items)
+        refined_prices = clean_price_results(self._retailer, rough_prices)
+
+        # refined_prices = [str(x).replace(".", "") for x in rough_prices]
+        # refined_prices = [x[:-6] for x in refined_prices]
+        # refined_prices = [int(x) for x in refined_prices]
 
         #   Sort both lists without un-linking them
         # refined_prices, refined_items = revert(refined_prices, refined_items)
