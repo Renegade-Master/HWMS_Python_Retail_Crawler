@@ -1,7 +1,9 @@
-#from lxml import html
-#import requests
 from threading import Thread
-from queue import Queue
+
+import requests
+from lxml import html
+
+from HwmsTools import clean_price_results, clean_product_name_results
 
 
 class Crawler(Thread):
@@ -10,60 +12,78 @@ class Crawler(Thread):
     site.  This Class is intended to be one of many concurrent Crawlers.
     """
 
-    result_of_search = Queue()
+    _queue_to_return = ''
+    _result_of_search = []
     _item_requested = ''
-    _xpath = ''
+    _xpath_price = ''
+    _xpath_name = ''
+    _queue_condition = ''
+    _retailer = ''
 
-    def __init__(self, item_, xpath_):
+    def __init__(self, item_, xpaths_, retailer_):
         super().__init__()
 
         self._item_requested = item_
-        self._xpath = xpath_
+        self._xpath_name = xpaths_[0]
+        self._xpath_price = xpaths_[1]
+        self._retailer = retailer_
+        self.name = self.name + ' [' + str(retailer_) + ']'
+        # print('Crawler ' + self.name + ' initialised')
 
-    def run(self) -> None:
-        self.test_thread()
+    def search(self, queue_, condition_):
+        self._queue_to_return = queue_
+        self._queue_condition = condition_
 
-    def test_thread(self):
-        print('\nFrom Thread: ' + self.name)
-        print('My Term: ' + self._item_requested)
-        print('My xPath: ' + self._xpath)
+        self.find_results()
 
-        self.result_of_search.put(self.name + ' returned first result')
-        self.result_of_search.put(self.name + ' returned second result')
-        return
+    def find_results(self):
+        print('Crawler \'' + self.name + '\' finding results')
+        print('\tUsing queue ' + str(self._result_of_search))
 
-    # def search_for_deals(self, search_term):
-    #     while True:
-    #         print('Initiating Search for: {}'.format(search_term))
-    #
-    #         page = requests.get('https://www.scan.co.uk/search?q={}'.format(search_term))
-    #         tree = html.fromstring(page.content)
-    #
-    #         #   Create a list of buyers and prices
-    #         rough_items = tree.xpath('//html/body/div/div/div/div/div/div/div/ul/li/'
-    #                                  'div/span/span[@class="description"]/a/text()')
-    #         rough_prices = tree.xpath('//html/body/div/div/div/div/div/div/div/ul/li/'
-    #                                   'div/div/div/div/span[@class="price"]/text()')
-    #
-    #         #   Print results
-    #         # print('Items: ', rough_items)
-    #         # print('Prices: ', rough_prices)
-    #         # print('Length of Item list: ', len(rough_items))
-    #         # print('Length of Prices list: ', len(rough_prices))
-    #
-    #         #   Tidy up the results
-    #         # print('\n')
-    #         refined_items = [x.rstrip() for x in rough_items]
-    #
-    #         refined_prices = [x[:-1] for x in rough_prices]
-    #         refined_prices = [int(x) for x in refined_prices]
-    #
-    #         #   Sort both lists without un-linking them
-    #         refined_prices, refined_items = revert(refined_prices, refined_items)
-    #         refined_prices = [str(x) for x in refined_prices]
-    #
-    #         # print('Items: ', refined_items)
-    #         # print('Prices: ', refined_prices)
-    #         self.result_of_search.task_done()
-    #
-    #     return refined_items, refined_prices
+        # Scrape and clean the current price data
+        self.search_for_deals(self._item_requested)
+
+        # Add the found list of items to the list of results
+        # self._result_of_search.append([randint(1, 100), randint(100, 200)])
+
+        # Acquire the Queue, add the results, release the Queue
+        with self._queue_condition:
+            while not self._queue_condition:
+                print('Waiting...')
+                self._queue_condition.wait()
+            else:
+                self._queue_to_return.put(self._result_of_search)
+                self._queue_condition.notifyAll()
+
+    def search_for_deals(self, search_term):
+        print('Initiating Search for: {}'.format(search_term))
+
+        page = requests.get(search_term)
+        # print(page.content)
+
+        tree = html.fromstring(page.content)
+
+        #   Create a list of buyers and prices
+        rough_items = tree.xpath(self._xpath_name)
+        rough_prices = tree.xpath(self._xpath_price)
+
+        #   Print results
+        print('Rough Items: ', rough_items)
+        print('Rough Prices: ', rough_prices)
+        print('Length of Item list: ', len(rough_items))
+        print('Length of Prices list: ', len(rough_prices))
+
+        #   Tidy up the results
+        refined_items = clean_product_name_results(self._retailer, rough_items)
+        refined_prices = clean_price_results(self._retailer, rough_prices)
+
+        #   Sort both lists without un-linking them
+        # refined_prices, refined_items = revert(refined_prices, refined_items)
+        # refined_prices = [str(x) for x in refined_prices]
+
+        print('Clean Items: ', refined_items)
+        print('Clean Prices: ', refined_prices)
+        print('\n---\n')
+        # self._result_of_search.append([refined_items, refined_prices])
+
+        # return self._result_of_search

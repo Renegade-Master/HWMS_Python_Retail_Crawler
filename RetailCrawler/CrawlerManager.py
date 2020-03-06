@@ -3,7 +3,7 @@ from queue import Queue
 from threading import Condition
 
 import HwmsTools as hwms
-from Crawler2 import Crawler
+from Crawler import Crawler
 
 
 class CrawlerManager:
@@ -30,8 +30,8 @@ class CrawlerManager:
         for retailer in hwms.Retailer.__iter__():
             thread = Crawler(
                 hwms.format_search_term(self._item_requested, retailer),  # Item requested
-                hwms.define_xpath(retailer),                              # Item Name and Price XPaths
-                str(retailer)                                             # Retailer name
+                hwms.define_xpath(retailer),  # Item Name and Price XPaths
+                retailer  # Retailer name
             )
             thread.setDaemon(True)  # Set Thread to be a Daemon to allow exiting under poor conditions
 

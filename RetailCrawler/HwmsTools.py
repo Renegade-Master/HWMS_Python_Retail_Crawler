@@ -1,6 +1,5 @@
 from enum import Enum
 from re import compile, IGNORECASE
-from lxml import html
 
 
 #   Function for sorting two lists by one of the lists, but retaining the order of the second list
@@ -46,11 +45,11 @@ def format_search_term(item_, retailer_):
     if retailer_ == Retailer.DE_CASEKING:
         search_url = \
             'https://www.caseking.de/search?sSearch={0}' \
-            .format(clean_string)
+                .format(clean_string)
     elif retailer_ == Retailer.NO_KOMPLETT:
         search_url = \
             'https://www.komplett.ie/search-results/?tn_q={0}' \
-            .format(clean_string)
+                .format(clean_string)
     # elif retailer_ == Retailer.UK_AMAZON:
     #     search_url = \
     #         'https://www.amazon.co.uk/s?k={0}' \
@@ -58,11 +57,11 @@ def format_search_term(item_, retailer_):
     elif retailer_ == Retailer.UK_ARIA:
         search_url = \
             'https://www.aria.co.uk/Products?search={0}' \
-            .format(clean_string)
+                .format(clean_string)
     elif retailer_ == Retailer.UK_SCAN:
         search_url = \
             'https://www.scan.co.uk/search?q={0}' \
-            .format(clean_string)
+                .format(clean_string)
 
     # print('Search URL: ' + search_url)
     return search_url
@@ -110,22 +109,35 @@ def clean_price_results(retailer_, price_list_):
     This function takes the raw scraped data and cleans it according to the Retailer from which the data originated.
     """
 
+    # Old Cleaning process
+    # refined_prices = [x.strip('[Aa') for x in rough_prices]
+    # refined_prices = [str(x).replace(".", "") for x in rough_prices]
+    # refined_prices = [x[:-6] for x in refined_prices]
+    # refined_prices = [int(x) for x in refined_prices]
+
     cleaned_price_list = ''
 
     # if retailer_ == Retailer.DE_AMAZON:
     #     pass
+
     if retailer_ == Retailer.DE_CASEKING:
-        pass
+        price_list_ = [x[:-3] for x in price_list_]
+        price_list_ = [str(x).replace(".", "") for x in price_list_]
+        cleaned_price_list = [str(x).replace(",", ".") for x in price_list_]
+
     elif retailer_ == Retailer.NO_KOMPLETT:
-        pass
+        price_list_ = [str(x).replace(",", "") for x in price_list_]
+        cleaned_price_list = [str(x).replace("-", "00") for x in price_list_]
+
     # elif retailer_ == Retailer.UK_AMAZON:
     #     pass
+
     elif retailer_ == Retailer.UK_ARIA:
         pass
+
     elif retailer_ == Retailer.UK_SCAN:
         pass
 
-    print('Cleaned Price List: ' + cleaned_price_list)
     return cleaned_price_list
 
 
@@ -134,22 +146,31 @@ def clean_product_name_results(retailer_, title_list_):
     This function takes the raw scraped data and cleans it according to the Retailer from which the data originated.
     """
 
+    # Old Cleaning process
+    # refined_items = [x.rstrip() for x in rough_items]
+
     cleaned_product_name_list = ''
 
     # if retailer_ == Retailer.DE_AMAZON:
     #     pass
+
     if retailer_ == Retailer.DE_CASEKING:
-        pass
+        cleaned_product_name_list = [x.strip('\n') for x in title_list_]
+
     elif retailer_ == Retailer.NO_KOMPLETT:
-        pass
+        title_list_ = [x[26:-21] for x in title_list_]
+        title_list_ = [x.strip('\r') for x in title_list_]
+        cleaned_product_name_list = [x.strip('\n') for x in title_list_]
+
     # elif retailer_ == Retailer.UK_AMAZON:
     #     pass
+
     elif retailer_ == Retailer.UK_ARIA:
         pass
+
     elif retailer_ == Retailer.UK_SCAN:
         pass
 
-    print('Cleaned Product Name List: ' + cleaned_product_name_list)
     return cleaned_product_name_list
 
 
