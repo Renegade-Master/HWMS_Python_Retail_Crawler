@@ -14,7 +14,6 @@ def format_search_term(item_, retailer_):
     URL to a store page.
     """
 
-    repl = ''
     regex = compile(r'\s', IGNORECASE)  # Look for spaces to replace
 
     # Format the term however the Retailer is expecting
@@ -34,8 +33,6 @@ def format_search_term(item_, retailer_):
     clean_string = regex.sub(repl, item_)
 
     # Format the search URL.
-    # ToDo: Move the retailer specific Strings to an external file
-    #  that is read in
     search_url = ''
 
     # if retailer_ == Retailer.DE_AMAZON:
@@ -79,26 +76,35 @@ def define_xpath(retailer_):
     #     x_paths = \
     #         '/html/body/div[1]/div[1]/div[1]/div[2]/div/span[4]/div[1]/div[1]/div/span/div/div/div[2]/div[2]/div/div[' \
     #         '1]/div/div/div[1]/h2/a/span'
+
     if retailer_ == Retailer.DE_CASEKING:
         x_paths = [
             '//span[@class="ProductTitle"]/text()',
-            '//span[@class="price"]/text()']
+            '//span[@class="price"]/text()',
+            '//div[@class="overlay"]/a[@class="more"]']
+
     elif retailer_ == Retailer.NO_KOMPLETT:
         x_paths = [
             '//span[@itemprop="name"]/text()',
-            '//div[@class="productlist-huidigeprijs"]/text()']
+            '//div[@class="productlist-huidigeprijs"]/text()',
+            '//div[@class="col-sm-3 productitem-image"]/a[@itemprop="url"]']
+
     # elif retailer_ == Retailer.UK_AMAZON:
     #     x_paths = \
     #         '/html/body/div[1]/div[2]/div[1]/div[2]/div/span[4]/div[1]/div[3]/div/span/div/div/div[2]/div[2]/div/div[' \
     #         '1]/div/div/div[1]/h2/a/span '
+
     elif retailer_ == Retailer.UK_ARIA:
         x_paths = [
             '//tr[@class="listTableTrSS"]/td[@style="max-width: 350px;"]/strong/a/text()',
-            '//span[@class="price bold"]/text()']
+            '//span[@class="price bold"]/text()',
+            '//tr[@class="listTableTrSS"]/td[@style="max-width: 350px;"]/strong/a']
+
     elif retailer_ == Retailer.UK_SCAN:
         x_paths = [
             '//span[@class="description"]/a/text()',
-            '//div[@class="leftColumn"]/span[@class="price"]/text()']
+            '//div[@class="leftColumn"]/span[@class="price"]/text()',
+            '//span[@class="description"]/a']
 
     # print('XPath: ' + x_paths)
     return x_paths
@@ -106,15 +112,14 @@ def define_xpath(retailer_):
 
 def clean_price_results(retailer_, price_list_):
     """ Function: clean_price_results
-    This function takes the raw scraped data and cleans it according to the Retailer from which the data originated.
+    This function takes the raw scraped Price data and cleans
+    it according to the Retailer from which the data originated.
+
+    Will require a way to convert Currency eventually as
+    both GBP and EUR are returned.
     """
 
-    # Old Cleaning process
-    # refined_prices = [x.strip('[Aa') for x in rough_prices]
-    # refined_prices = [str(x).replace(".", "") for x in rough_prices]
-    # refined_prices = [x[:-6] for x in refined_prices]
-    # refined_prices = [int(x) for x in refined_prices]
-
+    # ToDo: Add currency conversion for any price not in EUR.  For now, just leave currency symbol
     cleaned_price_list = ''
 
     # if retailer_ == Retailer.DE_AMAZON:
@@ -123,42 +128,47 @@ def clean_price_results(retailer_, price_list_):
     if retailer_ == Retailer.DE_CASEKING:
         price_list_ = [x[:-3] for x in price_list_]
         price_list_ = [str(x).replace(".", "") for x in price_list_]
-        cleaned_price_list = [str(x).replace(",", ".") for x in price_list_]
+        price_list_ = [str(x).replace(",", ".") for x in price_list_]
+        cleaned_price_list = [str('€' + x) for x in price_list_]
 
     elif retailer_ == Retailer.NO_KOMPLETT:
         price_list_ = [str(x).replace(",", "") for x in price_list_]
-        cleaned_price_list = [str(x).replace("-", "00") for x in price_list_]
+        price_list_ = [str(x).replace("-", "00") for x in price_list_]
+        cleaned_price_list = [str('€' + x) for x in price_list_]
 
     # elif retailer_ == Retailer.UK_AMAZON:
     #     pass
 
     elif retailer_ == Retailer.UK_ARIA:
-        pass
+        # cleaned_price_list = [str(x).replace("£", "") for x in price_list_]
+        cleaned_price_list = price_list_
 
     elif retailer_ == Retailer.UK_SCAN:
-        pass
+        price_list_ = [str(x + '99') for x in price_list_]
+        cleaned_price_list = [str('£' + x) for x in price_list_]
 
     return cleaned_price_list
 
 
-def clean_product_name_results(retailer_, title_list_):
+def clean_title_results(retailer_, title_list_):
     """ Function: clean_product_name_results
-    This function takes the raw scraped data and cleans it according to the Retailer from which the data originated.
+    This function takes the raw scraped Title data and cleans
+    it according to the Retailer from which the data originated.
     """
 
-    # Old Cleaning process
-    # refined_items = [x.rstrip() for x in rough_items]
-
     cleaned_product_name_list = ''
+
+    # Remove leading and trailing whitespace
+    title_list_ = [x.lstrip() for x in title_list_]
+    title_list_ = [x.rstrip() for x in title_list_]
 
     # if retailer_ == Retailer.DE_AMAZON:
     #     pass
 
     if retailer_ == Retailer.DE_CASEKING:
-        cleaned_product_name_list = [x.strip('\n') for x in title_list_]
+        cleaned_product_name_list = title_list_
 
     elif retailer_ == Retailer.NO_KOMPLETT:
-        title_list_ = [x[26:-21] for x in title_list_]
         title_list_ = [x.strip('\r') for x in title_list_]
         cleaned_product_name_list = [x.strip('\n') for x in title_list_]
 
@@ -166,12 +176,49 @@ def clean_product_name_results(retailer_, title_list_):
     #     pass
 
     elif retailer_ == Retailer.UK_ARIA:
-        pass
+        cleaned_product_name_list = title_list_
 
     elif retailer_ == Retailer.UK_SCAN:
-        pass
+        cleaned_product_name_list = title_list_
 
     return cleaned_product_name_list
+
+
+def clean_link_results(retailer_, link_list_):
+    """ Function: clean_link_results
+    This function takes the raw scraped URL data and cleans
+    it according to the Retailer from which the data originated.
+    """
+
+    cleaned_link_list_ = ''
+
+    # if retailer_ == Retailer.DE_AMAZON:
+    #     pass
+
+    if retailer_ == Retailer.DE_CASEKING:
+        cleaned_link_list_ = [
+            x.attrib['href']
+            for x in link_list_]
+
+    elif retailer_ == Retailer.NO_KOMPLETT:
+        cleaned_link_list_ = [
+            str('https://www.komplett.ie' + x.attrib['href'])
+            for x in link_list_]
+
+    # elif retailer_ == Retailer.UK_AMAZON:
+    #     pass
+
+    elif retailer_ == Retailer.UK_ARIA:
+        cleaned_link_list_ = [
+            str('https://www.aria.co.uk' + x.attrib['href'])
+            for x in link_list_]
+
+    elif retailer_ == Retailer.UK_SCAN:
+        cleaned_link_list_ = [
+            str('https://www.scan.co.uk' + x.attrib['href'])
+            for x in link_list_]
+
+    return cleaned_link_list_
 
 
 class Retailer(Enum):
