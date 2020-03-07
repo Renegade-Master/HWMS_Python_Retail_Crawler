@@ -87,12 +87,10 @@ class Crawler(Thread):
         # refined_prices, refined_items = revert(refined_prices, refined_items)
         # refined_prices = [str(x) for x in refined_prices]
 
-        # print('Clean Items: ', refined_items)
-        # print('Clean Prices: ', refined_prices)
-        # print('Clean Links: ')
-        # [print('\t', x) for x in refined_links]
-        # print('\n---\n')
+        print('Clean Items: ', refined_items)
+        print('Clean Prices: ', refined_prices)
+        print('Clean Links: ')
+        [print('\t', x) for x in refined_links]
+        print('\n---\n')
 
         self._result_of_search.append([refined_items, refined_prices, refined_links])
-
-        return self._result_of_search
