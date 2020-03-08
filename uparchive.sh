@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Script to create a ZIP package of the current development of HWMS
 # retail crawler for uploading as a Lambda function.
 
