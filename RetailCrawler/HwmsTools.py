@@ -1,5 +1,6 @@
 from enum import Enum
 from re import compile, IGNORECASE
+from datetime import datetime
 
 
 #   Function for sorting two lists by one of the lists, but retaining the order of the second list
@@ -227,7 +228,7 @@ class Retailer(Enum):
     """
     # DE_AMAZON = 0
     DE_CASEKING = 1
-    NO_KOMPLETT = 2
+    # NO_KOMPLETT = 2
     # UK_AMAZON = 3
-    UK_ARIA = 4
-    UK_SCAN = 5
+    # UK_ARIA = 4
+    # UK_SCAN = 5
