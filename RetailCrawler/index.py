@@ -37,12 +37,28 @@ def lambda_handler(event, context):
     #     temp = cw.get_results().get_nowait()
     #     while temp:
     #         print(temp.pop())
+
+    # [print(x) for x in list(cw.get_results())]
+    print('\nRetailers ')
+    for retailers in list(cw.get_results()):
+        print(retailers[0])
+
+    print('\nPrices ')
+    for retailers in list(cw.get_results()):
+        print(retailers[1])
+
+    print('\nLinks ')
+    for retailers in list(cw.get_results()):
+        print(retailers[2])
+
     print('## END TESTING 02\n')
 
     # Store the results in a DynamoDB table
     print('## TESTING 03')
     dynamodb = boto3.resource('dynamodb', 'eu-west-1')
     results_table = dynamodb.Table('SearchQueryResponse-5fsl2xomebd6tmxdjt3xsocctm-testenv')
+
+    # Disable the following command to prevent results being posted to DynamoDB
     results_table.put_item(
         Item={
             'id': str(id),

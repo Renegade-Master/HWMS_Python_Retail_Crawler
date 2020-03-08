@@ -1,15 +1,32 @@
 from enum import Enum
 from re import compile, IGNORECASE
 from datetime import datetime
+from decimal import Decimal
 
 
-#   Function for sorting two lists by one of the lists, but retaining the order of the second list
 def revert(a, b):
+    """ Function: revert
+    This function sorts two lists by a key comprised of items in the
+     first list, while retaining the order of the second list.
+    """
     a, b = map(list, zip(*sorted(zip(a, b), key=lambda x: x[0])))
     return a, b
 
 
+def sort_retaining_order(a, b, c):
+    """ Function: revert
+    This function sorts three lists by a key comprised of items in the
+     first list, while retaining the relative order of the other lists.
+    """
+    a, b, c = map(list, zip(*sorted(zip(a, b, c), key=lambda x: x[0])))
+    return a, b, c
+
+
 def get_current_datetime():
+    """ Function: get_current_datetime
+    This function returns the current Date-Time in the same format that
+    is used by the AWS DynamoDB.
+    """
     timestamp = str(datetime.now())
     timestamp = timestamp.replace(" ", "T")
     timestamp = timestamp[:-3]
@@ -128,8 +145,10 @@ def clean_price_results(retailer_, price_list_):
     both GBP and EUR are returned.
     """
 
-    # ToDo: Add currency conversion for any price not in EUR.  For now, just leave currency symbol
+    # ToDo: Add currency conversion for any price not in EUR.  For now,
+    #  just remove currency symbol
     cleaned_price_list = ''
+    Decimal(2)
 
     # if retailer_ == Retailer.DE_AMAZON:
     #     pass
@@ -137,24 +156,26 @@ def clean_price_results(retailer_, price_list_):
     if retailer_ == Retailer.DE_CASEKING:
         price_list_ = [x[:-3] for x in price_list_]
         price_list_ = [str(x).replace(".", "") for x in price_list_]
-        price_list_ = [str(x).replace(",", ".") for x in price_list_]
-        cleaned_price_list = [str('€' + x) for x in price_list_]
+        cleaned_price_list = [str(x).replace(",", ".") for x in price_list_]
+        # cleaned_price_list = [str('€' + x) for x in price_list_]
 
     elif retailer_ == Retailer.NO_KOMPLETT:
         price_list_ = [str(x).replace(",", "") for x in price_list_]
-        price_list_ = [str(x).replace("-", "00") for x in price_list_]
-        cleaned_price_list = [str('€' + x) for x in price_list_]
+        cleaned_price_list = [str(x).replace("-", "00") for x in price_list_]
+        # cleaned_price_list = [str('€' + x) for x in price_list_]
 
     # elif retailer_ == Retailer.UK_AMAZON:
     #     pass
 
     elif retailer_ == Retailer.UK_ARIA:
-        # cleaned_price_list = [str(x).replace("£", "") for x in price_list_]
-        cleaned_price_list = price_list_
+        cleaned_price_list = [str(x).replace("£", "") for x in price_list_]
+        # cleaned_price_list = price_list_
 
     elif retailer_ == Retailer.UK_SCAN:
-        price_list_ = [str(x + '99') for x in price_list_]
-        cleaned_price_list = [str('£' + x) for x in price_list_]
+        cleaned_price_list = [str(x + '99') for x in price_list_]
+        # cleaned_price_list = [str('£' + x) for x in price_list_]
+
+    cleaned_price_list = [float(x) for x in cleaned_price_list]
 
     return cleaned_price_list
 
@@ -236,7 +257,7 @@ class Retailer(Enum):
     """
     # DE_AMAZON = 0
     DE_CASEKING = 1
-    # NO_KOMPLETT = 2
+    NO_KOMPLETT = 2
     # UK_AMAZON = 3
-    # UK_ARIA = 4
-    # UK_SCAN = 5
+    UK_ARIA = 4
+    UK_SCAN = 5

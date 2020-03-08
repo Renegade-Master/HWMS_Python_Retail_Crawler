@@ -43,4 +43,6 @@ class CrawlerManager:
             thread.search(self._result_queue, self.wait_for_scrape)
 
     def get_results(self):
-        return self._result_queue
+        # ToDo: Figure out why there are [Crawlers.count] copies of the Queue in the Queue
+        # Only return the first item in the Queue to counteract the problem of there being many copies of the queue
+        return self._result_queue.queue[0]

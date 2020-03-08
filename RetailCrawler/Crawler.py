@@ -3,7 +3,8 @@ from threading import Thread
 import requests
 from lxml import html
 
-from HwmsTools import clean_price_results, clean_title_results, clean_link_results
+from HwmsTools import clean_price_results, clean_title_results,\
+    clean_link_results, sort_retaining_order
 
 
 class Crawler(Thread):
@@ -30,7 +31,7 @@ class Crawler(Thread):
         self._xpath_item_link = xpaths_[2]
         self._retailer = retailer_
         self.name = self.name + ' [' + str(retailer_) + ']'
-        # print('Crawler ' + self.name + ' initialised')
+        print('Crawler ' + self.name + ' initialised')
 
     def search(self, queue_, condition_):
         self._queue_to_return = queue_
@@ -46,7 +47,6 @@ class Crawler(Thread):
         self.search_for_deals(self._item_requested)
 
         # Add the found list of items to the list of results
-        # self._result_of_search.append([randint(1, 100), randint(100, 200)])
 
         # Acquire the Queue, add the results, release the Queue
         with self._queue_condition:
@@ -83,14 +83,19 @@ class Crawler(Thread):
         refined_prices = clean_price_results(self._retailer, rough_prices)
         refined_links = clean_link_results(self._retailer, rough_links)
 
-        #   Sort both lists without un-linking them
+        #   Sort the lists without un-linking them
+        # refined_prices, refined_links = revert(refined_prices, refined_links)
         # refined_prices, refined_items = revert(refined_prices, refined_items)
+        refined_prices, refined_items, refined_links = (
+            sort_retaining_order(refined_prices, refined_items, refined_links))
         # refined_prices = [str(x) for x in refined_prices]
 
-        print('Clean Items: ', refined_items)
-        print('Clean Prices: ', refined_prices)
-        print('Clean Links: ')
-        [print('\t', x) for x in refined_links]
-        print('\n---\n')
+        # Print the Results
+        # print('Clean Items: ', refined_items)
+        # print('Clean Prices: ', refined_prices)
+        # print('Clean Links: ', refined_links)
+        # print('Clean Links: ')
+        # [print('\t', x) for x in refined_links]
+        # print('\n---\n')
 
         self._result_of_search.append([refined_items, refined_prices, refined_links])
