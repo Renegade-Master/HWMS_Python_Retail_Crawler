@@ -46,8 +46,6 @@ class Crawler(Thread):
         # Scrape and clean the current price data
         self.search_for_deals(self._item_requested)
 
-        # Add the found list of items to the list of results
-
         # Acquire the Queue, add the results, release the Queue
         with self._queue_condition:
             while not self._queue_condition:
@@ -83,19 +81,14 @@ class Crawler(Thread):
         refined_prices = clean_price_results(self._retailer, rough_prices)
         refined_links = clean_link_results(self._retailer, rough_links)
 
-        #   Sort the lists without un-linking them
-        # refined_prices, refined_links = revert(refined_prices, refined_links)
-        # refined_prices, refined_items = revert(refined_prices, refined_items)
+        # Sort the items according to Price without losing relative ordering
         refined_prices, refined_items, refined_links = (
             sort_retaining_order(refined_prices, refined_items, refined_links))
-        # refined_prices = [str(x) for x in refined_prices]
 
         # Print the Results
         # print('Clean Items: ', refined_items)
         # print('Clean Prices: ', refined_prices)
         # print('Clean Links: ', refined_links)
-        # print('Clean Links: ')
-        # [print('\t', x) for x in refined_links]
         # print('\n---\n')
 
         self._result_of_search.append([refined_items, refined_prices, refined_links])

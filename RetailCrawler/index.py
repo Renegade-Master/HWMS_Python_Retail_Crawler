@@ -18,7 +18,7 @@ def lambda_handler(event, context):
     # print(event)
     # print('## END EVENT\n')
 
-    print('## TESTING 01')
+    print('## PHASE 01')
     clean_event = str(event).replace("\'", "\"")
     clean_event = str(clean_event).replace("False", "false")
     # print('Clean Event:\n' + clean_event)
@@ -29,9 +29,9 @@ def lambda_handler(event, context):
     # Launch the Webcrawlers
     cw = CrawlerManager(clean_event)
     cw.retrieve_search_results()
-    print('## END TESTING 01\n')
+    print('## END PHASE 01\n')
 
-    print('## TESTING 02')
+    print('## PHASE 02')
     # Print the contents of the Queue
     # while not cw.get_results().empty():
     #     temp = cw.get_results().get_nowait()
@@ -39,22 +39,22 @@ def lambda_handler(event, context):
     #         print(temp.pop())
 
     # [print(x) for x in list(cw.get_results())]
-    print('\nRetailers ')
-    for retailers in list(cw.get_results()):
-        print(retailers[0])
+    # print('\nRetailers ')
+    # for retailers in list(cw.get_results()):
+    #     print(retailers[0])
+    #
+    # print('\nPrices ')
+    # for retailers in list(cw.get_results()):
+    #     print(retailers[1])
+    #
+    # print('\nLinks ')
+    # for retailers in list(cw.get_results()):
+    #     print(retailers[2])
 
-    print('\nPrices ')
-    for retailers in list(cw.get_results()):
-        print(retailers[1])
-
-    print('\nLinks ')
-    for retailers in list(cw.get_results()):
-        print(retailers[2])
-
-    print('## END TESTING 02\n')
+    print('## END PHASE 02\n')
 
     # Store the results in a DynamoDB table
-    print('## TESTING 03')
+    print('## PHASE 03')
     dynamodb = boto3.resource('dynamodb', 'eu-west-1')
     results_table = dynamodb.Table('SearchQueryResponse-5fsl2xomebd6tmxdjt3xsocctm-testenv')
 
@@ -64,12 +64,12 @@ def lambda_handler(event, context):
             'id': str(id),
             '__typename': 'SearchQueryResponse',
             'createdAt': get_current_datetime(),
-            'result': 'value',
+            'result': cw.get_results(),
             'updatedAt': get_current_datetime()
         }
     )
 
-    print('## END TESTING 03\n')
+    print('## END PHASE 03\n')
 
     return {
         'statusCode': 200,  # OK
@@ -80,7 +80,7 @@ def lambda_handler(event, context):
 # Both of the following functions are for offline testing.  They may be
 # required to be disabled for cloud deployment.
 def __main__():
-    aws_event = "{'Records': [{'eventID': '67aa50f9a78d16d372b673cfec5e6e19', 'eventName': 'INSERT', 'eventVersion': '1.1', 'eventSource': 'aws:dynamodb', 'awsRegion': 'eu-west-1', 'dynamodb': {'ApproximateCreationDateTime': 1579040208, 'Keys': {'id': {'S': '1579111412732'}}, 'NewImage': {'createdAt': {'S': '2020-01-14T22:16:48.341Z'}, 'item': {'S': 'CPU Intel i7 9700K'}, '__typename': {'S': 'SearchQueryRequest'}, 'prediction': {'BOOL': False}, 'id': {'S': '1579111412732'}, 'updatedAt': {'S': '2020-01-14T22:16:48.341Z'}}, 'SequenceNumber': '30337100000000002705939892', 'SizeBytes': 157, 'StreamViewType': 'NEW_AND_OLD_IMAGES'}, 'eventSourceARN': 'arn:aws:dynamodb:eu-west-1:227389701406:table/SearchQueryRequest-5fsl2xomebd6tmxdjt3xsocctm-testenv/stream/2020-01-08T12:31:34.022'}]}"
+    aws_event = "{'Records': [{'eventID': '67aa50f9a78d16d372b673cfec5e6e19', 'eventName': 'INSERT', 'eventVersion': '1.1', 'eventSource': 'aws:dynamodb', 'awsRegion': 'eu-west-1', 'dynamodb': {'ApproximateCreationDateTime': 1579040208, 'Keys': {'id': {'S': '1579111412732'}}, 'NewImage': {'createdAt': {'S': '2020-01-14T22:16:48.341Z'}, 'item': {'S': 'CPU Intel i5 8600K'}, '__typename': {'S': 'SearchQueryRequest'}, 'prediction': {'BOOL': False}, 'id': {'S': '1579111412732'}, 'updatedAt': {'S': '2020-01-14T22:16:48.341Z'}}, 'SequenceNumber': '30337100000000002705939892', 'SizeBytes': 157, 'StreamViewType': 'NEW_AND_OLD_IMAGES'}, 'eventSourceARN': 'arn:aws:dynamodb:eu-west-1:227389701406:table/SearchQueryRequest-5fsl2xomebd6tmxdjt3xsocctm-testenv/stream/2020-01-08T12:31:34.022'}]}"
 
     lambda_handler(aws_event, 'null')
 

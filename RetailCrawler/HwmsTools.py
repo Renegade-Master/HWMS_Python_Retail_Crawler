@@ -9,6 +9,9 @@ def revert(a, b):
     This function sorts two lists by a key comprised of items in the
      first list, while retaining the order of the second list.
     """
+    if len(a) == 0:
+        return a, b
+
     a, b = map(list, zip(*sorted(zip(a, b), key=lambda x: x[0])))
     return a, b
 
@@ -17,7 +20,11 @@ def sort_retaining_order(a, b, c):
     """ Function: revert
     This function sorts three lists by a key comprised of items in the
      first list, while retaining the relative order of the other lists.
+
     """
+    if len(a) == 0:
+        return a, b, c
+
     a, b, c = map(list, zip(*sorted(zip(a, b, c), key=lambda x: x[0])))
     return a, b, c
 
@@ -175,7 +182,7 @@ def clean_price_results(retailer_, price_list_):
         cleaned_price_list = [str(x + '99') for x in price_list_]
         # cleaned_price_list = [str('£' + x) for x in price_list_]
 
-    cleaned_price_list = [float(x) for x in cleaned_price_list]
+    cleaned_price_list = [Decimal(x) for x in cleaned_price_list]
 
     return cleaned_price_list
 
