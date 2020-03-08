@@ -9,6 +9,14 @@ def revert(a, b):
     return a, b
 
 
+def get_current_datetime():
+    timestamp = str(datetime.now())
+    timestamp = timestamp.replace(" ", "T")
+    timestamp = timestamp[:-3]
+    timestamp += 'Z'
+    return timestamp
+
+
 def format_search_term(item_, retailer_):
     """ Function: format_search_term
     This function is used to convert a provided Item, and create a

@@ -1,10 +1,10 @@
 from os import environ
 from json import dumps, loads
 from multiprocessing import cpu_count
-from datetime import datetime
 import boto3
 
 from CrawlerManager import CrawlerManager
+from HwmsTools import get_current_datetime
 
 
 def lambda_handler(event, context):
@@ -47,9 +47,9 @@ def lambda_handler(event, context):
         Item={
             'id': str(id),
             '__typename': 'SearchQueryResponse',
-            'createdAt': int(round(datetime.now().timestamp())),
+            'createdAt': get_current_datetime(),
             'result': 'value',
-            'updatedAt': int(round(datetime.now().timestamp()))
+            'updatedAt': get_current_datetime()
         }
     )
 
