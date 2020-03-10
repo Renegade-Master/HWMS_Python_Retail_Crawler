@@ -45,7 +45,7 @@ def lambda_handler(event, context):
     # Store the results in a DynamoDB table
     print('## PHASE 03')
     dynamodb = boto3.resource('dynamodb', 'eu-west-1')
-    results_table = dynamodb.Table('SearchQueryResponse-5fsl2xomebd6tmxdjt3xsocctm-testenv')
+    results_table = dynamodb.Table('SearchQueryResponse-2aiyr2wthzdrxas7zpxcowy2gm-hwmstest')
 
     # Disable the following command to prevent results being posted to DynamoDB
     results_table.put_item(
