@@ -12,37 +12,70 @@ class CrawlerManager:
     the provided RequestString.
     """
 
-    result_list = []
+    result_list = [[], [], []]
     _result_queue = Queue(len(hwms.Retailer))  # IDE doesn't like this but it works
     wait_for_scrape = Condition()
     _threads = []
 
     def __init__(self, event_string):
+        """ Function: __init__
+        Initialise the CrawlerManager Class with the request String
+        """
+
         # Extract the relevant data from the Request
-        self.raw_request_string = loads(event_string)
-        self._item_requested = (
-            self.raw_request_string
+        raw_request_string = loads(event_string)
+        _item_requested = (
+            raw_request_string
             ['Records'][0]['dynamodb']["NewImage"]["item"]["S"]
         )
 
         # Make a new Crawler for each Retailer
-        print('\nInitialising Crawlers...')
+        # print('\nInitialising Crawlers...')
         for retailer in hwms.Retailer.__iter__():
             thread = Crawler(
-                hwms.format_search_term(self._item_requested, retailer),  # Item requested
-                hwms.define_xpath(retailer),  # Item Name and Price XPaths
-                retailer  # Retailer name
+                hwms.format_search_term(_item_requested, retailer),  # Item requested
+                hwms.define_xpath(retailer),                         # Item XPaths
+                retailer                                             # Retailer name
             )
-            thread.setDaemon(True)  # Set Thread to be a Daemon to allow exiting under poor conditions
+
+            # Set Thread to be a Daemon to allow exiting under poor conditions
+            thread.setDaemon(True)
 
             self._threads.append(thread)
 
     def retrieve_search_results(self):
-        print('\nBeginning search...')
+        """ Function: retrieve_search_results
+        Send the Web-Crawlers off to find results
+        """
+        # print('\nBeginning search...')
         for thread in self._threads:
             thread.search(self._result_queue, self.wait_for_scrape)
 
     def get_results(self):
+        """ Function: get_results
+        Combine and return all results from the Web-Crawl into one large list
+        """
         # ToDo: Figure out why there are [Crawlers.count] copies of the Queue in the Queue
-        # Only return the first item in the Queue to counteract the problem of there being many copies of the queue
-        return self._result_queue.queue[0]
+        # Only operate on the first item in the Queue to counteract the problem of there being many copies of the queue
+
+        # Add the Title fields
+        for retailer in self._result_queue.queue[0][0]:
+            for title in retailer:
+                self.result_list[0].append(title)
+
+        # Add the Price fields
+        for retailer in self._result_queue.queue[0][1]:
+            for price in retailer:
+                self.result_list[1].append(price)
+
+        # Add the Link fields
+        for retailer in self._result_queue.queue[0][2]:
+            for link in retailer:
+                self.result_list[2].append(link)
+
+        # Sort the new Master List
+        self.result_list[1], self.result_list[0], self.result_list[2] = (
+            hwms.sort_set_retaining_order(self.result_list[1], self.result_list[0], self.result_list[2]))
+
+        # Return the List
+        return self.result_list

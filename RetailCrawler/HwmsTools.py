@@ -3,20 +3,13 @@ from re import compile, IGNORECASE
 from datetime import datetime
 from decimal import Decimal
 
-
-def revert(a, b):
-    """ Function: revert
-    This function sorts two lists by a key comprised of items in the
-     first list, while retaining the order of the second list.
-    """
-    if len(a) == 0:
-        return a, b
-
-    a, b = map(list, zip(*sorted(zip(a, b), key=lambda x: x[0])))
-    return a, b
+""" Script: HwmsTools
+This script is a container for various helper functions required by one
+or more of the Classes used in the Web-Crawling functionality of HWMS.
+"""
 
 
-def sort_retaining_order(a, b, c):
+def sort_set_retaining_order(a, b, c):
     """ Function: revert
     This function sorts three lists by a key comprised of items in the
      first list, while retaining the relative order of the other lists.
@@ -262,9 +255,9 @@ class Retailer(Enum):
     """ Enum: Retailer
     Enum to branch execution path based on different Retailers.
     """
-    # DE_AMAZON = 0
-    DE_CASEKING = 1
-    NO_KOMPLETT = 2
-    # UK_AMAZON = 3
-    UK_ARIA = 4
-    UK_SCAN = 5
+    DE_CASEKING = 0
+    NO_KOMPLETT = 1
+    UK_ARIA = 2
+    UK_SCAN = 3
+    # DE_AMAZON = 4
+    # UK_AMAZON = 5

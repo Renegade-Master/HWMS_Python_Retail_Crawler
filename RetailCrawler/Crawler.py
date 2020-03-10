@@ -4,7 +4,7 @@ import requests
 from lxml import html
 
 from HwmsTools import clean_price_results, clean_title_results,\
-    clean_link_results, sort_retaining_order
+    clean_link_results, sort_set_retaining_order
 
 
 class Crawler(Thread):
@@ -14,7 +14,7 @@ class Crawler(Thread):
     """
 
     _queue_to_return = ''
-    _result_of_search = []
+    _result_of_search = [[], [], []]
     _item_requested = ''
     _xpath_price = ''
     _xpath_name = ''
@@ -23,6 +23,10 @@ class Crawler(Thread):
     _retailer = ''
 
     def __init__(self, item_, xpaths_, retailer_):
+        """ Function: __init__
+        Initialisation function for the Crawler Class.  Loads up the
+        Crawler with the data required to scrape a particular retailer.
+        """
         super().__init__()
 
         self._item_requested = item_
@@ -34,12 +38,22 @@ class Crawler(Thread):
         print('Crawler ' + self.name + ' initialised')
 
     def search(self, queue_, condition_):
+        """ Function: search
+        Activate the Web-Crawler.  Serves essentially as a wrapper for
+        the `run()` function.
+        """
+
         self._queue_to_return = queue_
         self._queue_condition = condition_
 
         self.find_results()
 
     def find_results(self):
+        """ Function find_results
+        Handle the Crawler's interaction with the Results Queue, ensuring
+        that it does not corrupt or become blocked.
+        """
+
         # print('Crawler \'' + self.name + '\' finding results')
         # print('\tUsing queue ' + str(self._result_of_search))
 
@@ -56,6 +70,9 @@ class Crawler(Thread):
                 self._queue_condition.notifyAll()
 
     def search_for_deals(self, search_term):
+        """ Function: search_for_deals
+        Search the provided URL for items relating to the Search Term.
+        """
         # print('Initiating Search for: {}'.format(search_term))
 
         raw_page_data = requests.get(search_term)
@@ -83,7 +100,7 @@ class Crawler(Thread):
 
         # Sort the items according to Price without losing relative ordering
         refined_prices, refined_items, refined_links = (
-            sort_retaining_order(refined_prices, refined_items, refined_links))
+            sort_set_retaining_order(refined_prices, refined_items, refined_links))
 
         # Print the Results
         # print('Clean Items: ', refined_items)
@@ -91,4 +108,6 @@ class Crawler(Thread):
         # print('Clean Links: ', refined_links)
         # print('\n---\n')
 
-        self._result_of_search.append([refined_items, refined_prices, refined_links])
+        self._result_of_search[0].append(refined_items)
+        self._result_of_search[1].append(refined_prices)
+        self._result_of_search[2].append(refined_links)
