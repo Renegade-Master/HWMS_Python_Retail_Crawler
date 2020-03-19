@@ -1,4 +1,4 @@
-import index
+from CrawlerManager import CrawlerManager
 
 
 def test_results_are_returned():
@@ -12,5 +12,10 @@ def test_results_are_returned():
                 "'arn:aws:dynamodb:eu-west-1:227389701406:table/SearchQueryRequest-5fsl2xomebd6tmxdjt3xsocctm-testenv" \
                 "/stream/2020-01-08T12:31:34.022'}]} "
 
-    assert index.lambda_handler(aws_event, 'null') != ''
+    clean_event = str(aws_event).replace("\'", "\"")
+    clean_event = str(clean_event).replace("False", "false")
 
+    cw = CrawlerManager(clean_event)
+    cw.retrieve_search_results()
+
+    assert cw.get_results() != ''
