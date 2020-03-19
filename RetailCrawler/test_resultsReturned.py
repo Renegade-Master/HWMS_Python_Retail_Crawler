@@ -1,4 +1,4 @@
-from .. import index
+import index
 
 
 def test_results_are_returned():
