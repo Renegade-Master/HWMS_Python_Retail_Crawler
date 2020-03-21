@@ -1,10 +1,14 @@
+#  Copyright (c) 2020 RenegadeMaster Inc. - All Right Reserved
+#  Unauthorized copying of this file, via any medium is strictly prohibited.
+#  The contents of this file are proprietary and confidential.
+#  Written by Ciaran Bent <ciaran.bent@protonmail.ch>, March 2020
+
 from threading import Thread
 
 import requests
 from lxml import html
 
-from HwmsTools import clean_price_results, clean_title_results,\
-    clean_link_results, sort_set_retaining_order
+from HwmsTools import clean_link_results, clean_price_results, clean_title_results, sort_set_retaining_order
 
 
 class Crawler(Thread):

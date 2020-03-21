@@ -1,3 +1,8 @@
+#  Copyright (c) 2020 RenegadeMaster Inc. - All Right Reserved
+#  Unauthorized copying of this file, via any medium is strictly prohibited.
+#  The contents of this file are proprietary and confidential.
+#  Written by Ciaran Bent <ciaran.bent@protonmail.ch>, March 2020
+
 from json import loads
 from queue import Queue
 from threading import Condition
@@ -34,8 +39,8 @@ class CrawlerManager:
         for retailer in hwms.Retailer.__iter__():
             thread = Crawler(
                 hwms.format_search_term(_item_requested, retailer),  # Item requested
-                hwms.define_xpath(retailer),                         # Item XPaths
-                retailer                                             # Retailer name
+                hwms.define_xpath(retailer),  # Item XPaths
+                retailer  # Retailer name
             )
 
             # Set Thread to be a Daemon to allow exiting under poor conditions

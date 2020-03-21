@@ -1,6 +1,10 @@
-from os import environ
+#  Copyright (c) 2020 RenegadeMaster Inc. - All Right Reserved
+#  Unauthorized copying of this file, via any medium is strictly prohibited.
+#  The contents of this file are proprietary and confidential.
+#  Written by Ciaran Bent <ciaran.bent@protonmail.ch>, March 2020
+
 from json import dumps, loads
-from multiprocessing import cpu_count
+
 import boto3
 
 from CrawlerManager import CrawlerManager

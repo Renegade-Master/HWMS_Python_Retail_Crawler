@@ -1,7 +1,12 @@
-from enum import Enum
-from re import compile, IGNORECASE
+#  Copyright (c) 2020 RenegadeMaster Inc. - All Right Reserved
+#  Unauthorized copying of this file, via any medium is strictly prohibited.
+#  The contents of this file are proprietary and confidential.
+#  Written by Ciaran Bent <ciaran.bent@protonmail.ch>, March 2020
+
 from datetime import datetime
 from decimal import Decimal
+from enum import Enum
+from re import compile, IGNORECASE
 
 """ Script: HwmsTools
 This script is a container for various helper functions required by one
